@@ -13,7 +13,7 @@ ROOT_PATH = Path(__file__).parent.parent
 
 class ApplicationBuilder:
     config_path = ROOT_PATH / 'config.json'
-    log_dir = ROOT_PATH / 'logs' / datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_dir = ROOT_PATH / 'logs' / datetime.datetime.now().strftime("%H-%M-%S_%Y-%m-%d")
     env_file = ROOT_PATH / '.env'
 
     @classmethod
