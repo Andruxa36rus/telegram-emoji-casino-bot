@@ -1,10 +1,11 @@
 import logging
+import os
 from datetime import datetime
 
 
 def setup_logger(log_dir):
     """Настройка системы логирования"""
-    log_dir.mkdir(exist_ok=True)
+    os.makedirs(log_dir, exist_ok=True)
 
     # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
