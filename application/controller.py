@@ -31,12 +31,16 @@ class ApplicationController:
         """ Обработка сообщения """
         if not self.game_active:
             # Игра завершена, отправляем стоп-сообщение
-            await self.send_reply(update, self.config['stop_message'])
+            stop_message = self.config['stop_message']
+            await self.send_reply(update, stop_message)
             return
         message = update.message
         user_id = message.from_user.id
         username = message.from_user.username
         dice = message.dice
+
+        if message.forward_origin:
+            return
 
         # Проверяем, не обрабатывали ли уже это сообщение
         if message.message_id in self.processed_messages:
@@ -81,6 +85,7 @@ class ApplicationController:
         win_data = {
             "datetime": win_time,
             "value": dice_value,
+            "message_id": message_id
         }
         self.winners[user_id].append(win_data)
         self.username_map[user_id] = user_mention
@@ -106,12 +111,16 @@ class ApplicationController:
         )
 
         # Добавляем информацию о топ-победителях
-        sorted_winners = sorted(self.winners.items(), key=lambda x: len(x[1]), reverse=True)[:5]
+        sorted_winners = sorted(self.winners.items(), key=lambda x: len(x[1]), reverse=True)#[:5]
         for i, (user_id, wins) in enumerate(sorted_winners, 1):
             username = "Неизвестно"
             # Пытаемся получить username из контекста
             if wins:
                 user_mention = self.username_map.get(user_id, f"id{user_id}")
-                status_text += f"{i}. {user_mention}: {len(wins)} побед\n"
+                message_links = []
+                for win in wins:
+                    message_links.append(f"https://t.me/logovoboica/{win.get('message_id', 'ошибка')}")
+                links_string = "\n".join(message_links)
+                status_text += f"{i}. {user_mention}: {len(wins)} побед\n{links_string}\n\n"
 
-        await update.message.reply_text(status_text)
+        await self.send_reply(update, status_text)

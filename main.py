@@ -35,7 +35,7 @@ def main():
     print(f"  Сообщение победы: `{controller.config['win_condition']}`")
     print(f"  Сообщение комбинации: `{controller.config['progress_message']}`")
     print(f"  Сообщение об окончании игры: `{controller.config['stop_message']}`")
-    application.run_polling()
+    application.run_polling(drop_pending_updates=True)
 
 
 if __name__ == "__main__":
